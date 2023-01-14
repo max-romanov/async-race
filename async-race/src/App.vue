@@ -1,15 +1,9 @@
 <script setup lang="ts">
-console.log('Hello World')
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <main class="bg-blue-500">
-    <h1>Hello World</h1>
-  </main>
+  <RouterView></RouterView>
 </template>
 
-<style>
-main {
-  width: 100%;
-}
-</style>
+<style></style>
