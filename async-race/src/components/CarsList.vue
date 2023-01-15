@@ -1,13 +1,20 @@
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import Car from './Car.vue'
+import type {IExtendedCar} from "@/interfaces/IExtendedCar";
 
-export default defineComponent({
-  props: {
-    msg: String,
-  },
-})
+interface IProps {
+  cars: IExtendedCar[]
+}
+
+const props = defineProps<IProps>()
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
+  <div>
+    <div v-for="car in props.cars" :key="car.id">
+      <Car :car-data="car"></Car>
+    </div>
+  </div>
 </template>
+
+<style></style>

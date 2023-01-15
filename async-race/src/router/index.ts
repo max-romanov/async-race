@@ -1,19 +1,25 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import Garage from '../views/Garage.vue'
 import Winners from '../views/Winners.vue'
+import notFoundPage from '../views/404.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(),
   routes: [
     {
       name: 'Garage',
-      path: '/garage',
+      path: '/',
       component: Garage,
     },
     {
       name: 'winners',
       path: '/winners',
       component: Winners,
+    },
+    {
+      name: 'not found',
+      path: '/:pathMatch(.*)*',
+      component: notFoundPage,
     },
   ],
 })
