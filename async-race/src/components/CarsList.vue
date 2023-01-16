@@ -12,7 +12,7 @@ const props = defineProps<IProps>()
 <template>
   <div>
     <div v-for="car in props.cars" :key="car.id">
-      <Car :car-data="car"></Car>
+      <Car :controls="true" :car-data="car"></Car>
     </div>
   </div>
 </template>

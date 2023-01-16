@@ -22,6 +22,7 @@ export const useBaseStore = defineStore('baseStore', {
       try {
         const res = await fetch('http://localhost:3000/garage')
         this.garage = await res.json()
+        console.log(this.garage)
       } catch (e) {
         console.log(e)
       }
@@ -47,14 +48,38 @@ export const useBaseStore = defineStore('baseStore', {
       }
     },
     async createCar(name: string, color: string) {
+      console.log({name, color})
       try {
-        const res = await fetch('http://localhost:3000', {
+        console.time("createCar")
+        const res = await fetch('http://localhost:3000/garage', {
           method: 'POST',
-          body: JSON.stringify({ name, color }),
+          body: JSON.stringify({name, color}),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
         })
+        const data = await res.json()
+        if (this.cars) {
+          const car = data
+          car.isMoving = false
+          this.cars.push(car)
+          console.timeEnd("createCar")
+        }
+        console.log(res)
       } catch (e) {
         console.log(e)
       }
     },
+    setCurrentCar(car: IExtendedCar) {
+      this.chosenCar = car
+    },
+    async getWinner(id: number) {
+      const res = await fetch(`http://localhost:3000/winner/${id}`)
+      return res.json()
+    }
   },
+  getters: {
+
+  }
 })
