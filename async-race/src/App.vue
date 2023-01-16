@@ -1,18 +1,46 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView, RouterLink, useRoute  } from 'vue-router'
 import { useBaseStore } from './stores/index'
 
 const baseStore = useBaseStore()
 
 baseStore.setData()
 
-console.log('awaited')
+const route = useRoute()
 
-//baseStore.setCars()
+console.log()
 </script>
 
 <template>
-  <RouterView></RouterView>
+  <div class="main">
+    <div class="links-wrapper">
+      <div class="links">
+        <RouterLink to="/winners">Winners</RouterLink>
+        <RouterLink to="/">Garage</RouterLink>
+      </div>
+      {{route.name}}
+    </div>
+    <span v-if="baseStore.chosenCar">{{baseStore.chosenCar.name}}</span>
+    <RouterView></RouterView>
+  </div>
 </template>
 
-<style></style>
+<style scoped>
+.main {
+  width: 100%;
+  height: 100%;
+}
+
+.links-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  /*padding: 20px;*/
+  margin: 10px 0;
+}
+
+.links {
+  display: flex;
+  gap: 20px;
+}
+</style>

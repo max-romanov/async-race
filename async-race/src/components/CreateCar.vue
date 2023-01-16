@@ -1,20 +1,45 @@
 <script setup lang="ts">
 import { useBaseStore } from '@/stores/'
+import {ref} from "vue";
 
-let color: string = ''
-let text: string = ''
+let color: string = '#000000'
+let name: string = ''
+
+const nameInput = ref<HTMLInputElement | null>(null)
+const colorInput = ref<HTMLInputElement | null>(null)
+
+const clearInputs = () => {
+  if (nameInput.value && colorInput.value) {
+    nameInput.value.value = "#000000"
+    colorInput.value.value = ""
+  }
+}
 
 const baseStore = useBaseStore()
 </script>
 
 <template>
   <div>
-    <input class="green-input-color" type="color" v-model="color"/>
-    <input class="green-input-text" placeholder="car name" type="text" v-model="text">
+      <input ref="nameInput" name="name" class="green-input-color" type="color" v-model="color" v-bind="" />
+      <input ref="colorInput" name="color" class="green-input-text" placeholder="car name" type="text" v-model="name" >
+      <button class="create-button" @click="() => {
+        if (!name.length) {
+          return
+        }
+        baseStore.createCar(name, color)
+        clearInputs()
+      }">Create</button>
   </div>
 </template>
 
 <style scoped>
+div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
 .green-input-text {
   border: var(--vt-c-black-mute) solid 2px;
   border-radius: 8px;
@@ -54,9 +79,10 @@ const baseStore = useBaseStore()
   box-shadow: none;
   outline: none;
   border: none;
-  border-radius: 50%;
+  border-radius: 50% !important;
   background: transparent;
   transition: 0.5s ease;
+
 }
 
 .green-input-text:focus {
