@@ -7,8 +7,6 @@ const baseStore = useBaseStore()
 baseStore.setData()
 
 const route = useRoute()
-
-console.log()
 </script>
 
 <template>

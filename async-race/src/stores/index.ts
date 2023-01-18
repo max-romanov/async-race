@@ -74,12 +74,48 @@ export const useBaseStore = defineStore('baseStore', {
     setCurrentCar(car: IExtendedCar) {
       this.chosenCar = car
     },
+
     async getWinner(id: number) {
-      const res = await fetch(`http://localhost:3000/winner/${id}`)
+      const res = await fetch(`http://localhost:3000/winners/${id}`)
       return res.json()
+    },
+
+    async startCar(id: number) {
+      console.log(this.cars?.[id])
+      if (!this.cars) {
+        return
+      }
+      this.cars[id - 1].isMoving = true
+      const res = await fetch(`http://localhost:3000/engine?id=${id}&status=started`, {
+        method: "PATCH"
+      })
+      const data = res.json()
+      console.log(data)
+    },
+
+    stopCar(id: number) {
+      if (this.cars && this.cars[id].isMoving) {
+        this.cars[id].isMoving = false
+        return
+      }
+    },
+
+    getCar(id: number): IExtendedCar | null {
+      if (!this.cars) {
+        return null
+      }
+      return this.cars.find(car => car.id === id) || null
+    },
+
+    startAll() {
+      if (this.cars) {
+        this.cars = this.cars.map(car => {
+          return {
+            ...car,
+            isMoving: true,
+          }
+        })
+      }
     }
   },
-  getters: {
-
-  }
 })

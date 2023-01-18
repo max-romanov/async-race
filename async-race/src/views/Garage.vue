@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useBaseStore } from '../stores/index'
+import { useBaseStore } from '@/stores'
 import CarsList from '../components/CarsList.vue'
 import CreateCar from '@/components/CreateCar.vue'
 
