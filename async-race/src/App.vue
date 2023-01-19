@@ -19,7 +19,9 @@ const route = useRoute()
       {{route.name}}
     </div>
     <span v-if="baseStore.chosenCar">{{baseStore.chosenCar.name}}</span>
-    <RouterView></RouterView>
+    <Transition>
+      <RouterView></RouterView>
+    </Transition>
   </div>
 </template>
 
@@ -40,5 +42,15 @@ const route = useRoute()
 .links {
   display: flex;
   gap: 20px;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useBaseStore} from "@/stores";
-import {ref} from "vue";
+import {ref, reactive} from "vue";
 import type {IExtendedCar} from "@/interfaces/IExtendedCar";
 
 const car = ref<HTMLDivElement | null>(null)
@@ -15,7 +15,6 @@ const baseStore = useBaseStore()
 const props = defineProps<IProps>()
 
 
-
 let animeId: number | null = null
 
 const onClick = () => {
@@ -27,19 +26,27 @@ const onClick = () => {
 }
 
 let a = 1
-const inc = Math.random()
-
+let finished = false
+let inc: number | null = 1.1
+const transition = ref<number>(0)
 
 const animate = (stamp: number) => {
-  if (a < 500) {
-    a += inc
-  }
-
-  if (car.value) {
-    car.value.style.transform = `translateX(${a}px)`
-  }
-
-  animeId = requestAnimationFrame(animate)
+  // if (a < 500) {
+  //   if (!inc) {
+  //     return
+  //   }
+  //   a *= inc
+  // } else {
+  //   finished = true
+  //   console.log(`${props.carData.name} finished; timestamp: ${new Date()}`)
+  //   animeId && window.cancelAnimationFrame(animeId)
+  // }
+  //
+  // transform.value = a
+  //
+  // if (!finished) {
+  //   animeId = requestAnimationFrame(animate)
+  // }
 }
 
 const stopAnimate = () => {
@@ -48,19 +55,31 @@ const stopAnimate = () => {
   }
 }
 
-const startCar = () => {
+const startCar = async () => {
   console.log(baseStore.cars && baseStore.cars[props.carData.id - 1])
   if (baseStore.cars && baseStore.cars[props.carData.id - 1].isMoving) {
     baseStore.stopCar(props.carData.id - 1)
-    stopAnimate()
+    if (car.value) {
+      car.value.style.transition = ""
+      car.value.style.transform = ""
+    }
     return
   }
-  baseStore.startCar(props.carData.id)
-  animate(0)
+  const data = await baseStore.startCar(props.carData.id)
+  if (data) {
+    if (car.value) {
+      car.value.style.transition = (data.distance / data.velocity).toString() + "ms" + " linear"
+      car.value.style.transform = `translate(${parseInt(window.getComputedStyle(document.body).width) - 100}px)`
+      console.log(`translate(${parseInt(window.getComputedStyle(document.body).width) - 100}px)`)
+    }
+  }
 }
 
-if (props.carData.isMoving) {
-  startCar()
+if (/*baseStore.getCar(props.carData.id)?.isMoving*/props.carData.isMoving && props.controls) {
+  console.log('alala')
+  // startCar()
+  requestAnimationFrame(animate)
+  console.log('alala1')
 }
 </script>
 
@@ -68,9 +87,9 @@ if (props.carData.isMoving) {
   <div class="car" :class="baseStore.chosenCar === props.carData ? 'selected' : ''" @click="onClick">
     <h3>{{ props.carData.name }}</h3>
     <div
-        ref="car"
       class="carColor"
-      :style="{ backgroundColor: props.carData.color }"
+      ref="car"
+      :style="{ backgroundColor: props.carData.color, transition: `${transition}` }"
     ></div>
     <div v-if="props.controls">
       <button @click="startCar">{{ baseStore.cars[props.carData.id - 1]?.isMoving ? "stop" : "start" }}</button>

@@ -8,6 +8,7 @@ const baseStore = useBaseStore()
 
 <template>
   <div class="garage fade">
+    <button @click="baseStore.startAll()">start all</button>
     <CreateCar  />
     <div v-if="baseStore.cars">
       <h2 class="green">cars in garage: {{ baseStore.cars.length }}</h2>

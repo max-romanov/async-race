@@ -80,17 +80,18 @@ export const useBaseStore = defineStore('baseStore', {
       return res.json()
     },
 
-    async startCar(id: number) {
+    async startCar(id: number): Promise<{velocity: number, distance: number} | null> {
       console.log(this.cars?.[id])
       if (!this.cars) {
-        return
+        return null
       }
       this.cars[id - 1].isMoving = true
       const res = await fetch(`http://localhost:3000/engine?id=${id}&status=started`, {
         method: "PATCH"
       })
-      const data = res.json()
+      const data = await res.json()
       console.log(data)
+      return data
     },
 
     stopCar(id: number) {
@@ -114,6 +115,14 @@ export const useBaseStore = defineStore('baseStore', {
             ...car,
             isMoving: true,
           }
+        })
+      }
+    },
+
+    stopAll() {
+      if (this.cars) {
+        this.cars = this.cars.map(car => {
+          return {...car, isMoving: false}
         })
       }
     }

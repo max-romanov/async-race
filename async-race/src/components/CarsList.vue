@@ -7,15 +7,12 @@ interface IProps {
   cars: IExtendedCar[]
 }
 
-const store = useBaseStore()
-
 const props = defineProps<IProps>()
 </script>
 
 <template>
   <div>
-    <button @click="store.startAll()">start all</button>
-    <div v-for="car in props.cars" :key="car.id">
+    <div v-for="car in props.cars" :key="car">
       <Car :controls="true" :car-data="car"></Car>
     </div>
   </div>
