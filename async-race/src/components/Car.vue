@@ -14,8 +14,38 @@ const baseStore = useBaseStore()
 
 const props = defineProps<IProps>()
 
+let duration: number | null = null
+const amountPx = window.innerWidth - 110
 
 let animeId: number | null = null
+let animation: boolean = true
+let i: number = 0
+let startTime: number | null = null
+
+const animate = (timestamp: number) => {
+  console.log(duration)
+  if (!startTime) {
+    startTime = timestamp
+  }
+
+  const runTime = timestamp - startTime
+
+  if (duration) {
+    const relProgress = runTime / duration
+
+    const left = amountPx * Math.min(relProgress, 1)
+
+    if (!car.value) {
+      return
+    }
+
+    car.value.style.transform = `translateX(${left}px)`
+
+    if (runTime < duration) {
+      requestAnimationFrame(animate)
+    }
+  }
+}
 
 const onClick = () => {
   console.log(props.carData.id)
@@ -25,61 +55,24 @@ const onClick = () => {
   console.log(props.carData.isMoving)
 }
 
-let a = 1
-let finished = false
-let inc: number | null = 1.1
 const transition = ref<number>(0)
 
-const animate = (stamp: number) => {
-  // if (a < 500) {
-  //   if (!inc) {
-  //     return
-  //   }
-  //   a *= inc
-  // } else {
-  //   finished = true
-  //   console.log(`${props.carData.name} finished; timestamp: ${new Date()}`)
-  //   animeId && window.cancelAnimationFrame(animeId)
-  // }
-  //
-  // transform.value = a
-  //
-  // if (!finished) {
-  //   animeId = requestAnimationFrame(animate)
-  // }
-}
-
-const stopAnimate = () => {
-  if (animeId) {
-    cancelAnimationFrame(animeId)
-  }
-}
-
 const startCar = async () => {
-  console.log(baseStore.cars && baseStore.cars[props.carData.id - 1])
-  if (baseStore.cars && baseStore.cars[props.carData.id - 1].isMoving) {
-    baseStore.stopCar(props.carData.id - 1)
-    if (car.value) {
-      car.value.style.transition = ""
-      car.value.style.transform = ""
-    }
+  if (!baseStore.cars) {
+    return
+  }
+  if (baseStore.cars[props.carData.id - 1].isMoving) {
     return
   }
   const data = await baseStore.startCar(props.carData.id)
   if (data) {
-    if (car.value) {
-      car.value.style.transition = (data.distance / data.velocity).toString() + "ms" + " linear"
-      car.value.style.transform = `translate(${parseInt(window.getComputedStyle(document.body).width) - 100}px)`
-      console.log(`translate(${parseInt(window.getComputedStyle(document.body).width) - 100}px)`)
-    }
+    // console.log(data)
+    // setTimeout(() => {animation = false}, data.distance / data.velocity)
+    duration = data.distance / data.velocity
+    requestAnimationFrame(animate)
+    const a = await baseStore.driveCar(props.carData.id)
+    console.log(a)
   }
-}
-
-if (/*baseStore.getCar(props.carData.id)?.isMoving*/props.carData.isMoving && props.controls) {
-  console.log('alala')
-  // startCar()
-  requestAnimationFrame(animate)
-  console.log('alala1')
 }
 </script>
 

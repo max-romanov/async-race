@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { RouterView, RouterLink, useRoute  } from 'vue-router'
-import { useBaseStore } from './stores/index'
+import {RouterLink, RouterView, useRoute} from 'vue-router'
+import {useBaseStore} from './stores/index'
 
 const baseStore = useBaseStore()
 
@@ -16,12 +16,14 @@ const route = useRoute()
         <RouterLink to="/winners">Winners</RouterLink>
         <RouterLink to="/">Garage</RouterLink>
       </div>
-      {{route.name}}
+      {{ route.name }}
     </div>
-    <span v-if="baseStore.chosenCar">{{baseStore.chosenCar.name}}</span>
-    <Transition>
-      <RouterView></RouterView>
-    </Transition>
+    <span v-if="baseStore.chosenCar">{{ baseStore.chosenCar.name }}</span>
+    <router-view v-slot="{ Component }">
+      <transition name="scale" mode="out-in">
+        <component :is="Component"/>
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -44,13 +46,12 @@ const route = useRoute()
   gap: 20px;
 }
 
-.v-enter-active,
-.v-leave-active {
-  transition: opacity 0.5s ease;
+.scale-enter-active, .scale-leave-active {
+  transition: all 0.3s ease;
 }
 
-.v-enter-from,
-.v-leave-to {
+.scale-enter-from, .scale-leave-to {
   opacity: 0;
+  transform: scale(0.9);
 }
 </style>

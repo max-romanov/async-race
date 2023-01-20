@@ -80,18 +80,25 @@ export const useBaseStore = defineStore('baseStore', {
       return res.json()
     },
 
-    async startCar(id: number): Promise<{velocity: number, distance: number} | null> {
-      console.log(this.cars?.[id])
+    async startCar(id: number): Promise<{ velocity: number, distance: number } | null> {
       if (!this.cars) {
         return null
       }
-      this.cars[id - 1].isMoving = true
       const res = await fetch(`http://localhost:3000/engine?id=${id}&status=started`, {
         method: "PATCH"
       })
-      const data = await res.json()
-      console.log(data)
-      return data
+      return await res.json()
+    },
+
+    async driveCar(id: number) {
+      if (!this.cars) {
+        return
+      }
+      console.log(`drive mode ${id}`)
+      const res = await fetch(`http://localhost:3000/engine?id=${id}&status=drive`, {
+        method: "PATCH",
+      })
+      return await res.text()
     },
 
     stopCar(id: number) {
@@ -128,3 +135,19 @@ export const useBaseStore = defineStore('baseStore', {
     }
   },
 })
+
+// const a=async()=>{
+//   const res = await fetch(`http://localhost:3000/engine?id=1&status=started`, {
+//     method: "PATCH"
+//   })
+//   const data = await res.json()
+//   console.log(data)
+//
+//   const res1 = await fetch(`http://localhost:3000/engine?id=1&status=drive`, {
+//     method: "PATCH"
+//   })
+//   const data1 = await res1.json()
+//   console.log("data2", data1)
+//
+// }
+// await a()
