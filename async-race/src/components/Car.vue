@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import {useBaseStore} from "@/stores";
 import {ref, reactive, computed} from "vue";
-import type {IExtendedCar} from "@/interfaces/IExtendedCar";1
+import type {IExtendedCar} from "@/interfaces/IExtendedCar";
+import EditCarPopup from "@/components/EditCarPopup.vue";
 
 const car = ref<HTMLDivElement | null>(null)
 
@@ -18,7 +19,7 @@ const props = defineProps<IProps>()
 
 const start = computed<string>(() => {
   console.log(props.carData.isMoving)
-  return props.carData.isMoving ? "stop" : "start"
+  return props.carData.isMoving ? "Stop" : "Start"
 })
 
 let duration: number | null = null
@@ -93,6 +94,8 @@ if (props.carData.isMoving && props.controls) {
   startCar()
 }
 
+const {log} = console
+
 </script>
 
 <template>
@@ -103,7 +106,9 @@ if (props.carData.isMoving && props.controls) {
       ref="car"
       :style="{ backgroundColor: props.carData.color, transition: `${transition}` }"
     ></div>
+<!--    <img src="../assets/car-1057.svg" alt="234" :style="{background: props.carData.color}" ref="car">-->
     {{duration}}
+
     <div class="car-control-buttons" v-if="props.controls">
       <button @click="startCar">
         <unicon name="rocket"/>
@@ -111,12 +116,11 @@ if (props.carData.isMoving && props.controls) {
       </button>
       <button @click="deleteCar">
         <unicon name="car-slash"/>
-        remove
+        Remove
       </button>
-      <button>
-        <unicon name="pen"/>
-        edit
-      </button>
+      <edit-car-popup :car-color="props.carData.color" :car-name="props.carData.name" @submit="(newName, newColor) => {
+        log(newName, newColor)
+      }"/>
     </div>
   </div>
 </template>

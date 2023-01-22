@@ -134,7 +134,7 @@ export const useBaseStore = defineStore('baseStore', {
       return null
     },
 
-    startAll() {
+    startRace() {
       if (this.cars) {
         this.cars = this.cars.map(car => {
           return {
@@ -164,7 +164,22 @@ export const useBaseStore = defineStore('baseStore', {
       }
     },
 
-
+    async updateCar(id: number, newName: string, newColor: string) {
+      try {
+        const res = fetch(`http://localhost:3000/garage/${id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            name: newName,
+            color: newColor
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+      } catch (err) {
+        console.log(err)
+      }
+    }
   },
 })
 
