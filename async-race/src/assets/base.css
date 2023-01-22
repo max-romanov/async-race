@@ -81,7 +81,7 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 input {
@@ -105,4 +105,8 @@ input[type="color"]::-webkit-color-swatch {
 input[type="color"] {
   width: 50px;
   height: 50px;
+}
+
+::-webkit-scrollbar {
+  width: 0;
 }

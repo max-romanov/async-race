@@ -37,3 +37,20 @@ a,
     background-color: hsla(160, 100%, 37%, 0.2);
   }
 }
+
+
+button {
+  border: solid 2px var(--vue-green);
+  padding: 5px 10px;
+  margin-top: 7px;
+  background: transparent;
+  border-radius: 7px;
+  color: var(--color-text);
+  font-family: "JetBrains Mono";
+  transition: .4s ease;
+  cursor: pointer;
+}
+
+button:hover {
+  color: var(--vue-green);
+}

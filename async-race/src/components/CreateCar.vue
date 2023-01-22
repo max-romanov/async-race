@@ -15,6 +15,10 @@ const clearInputs = () => {
   }
 }
 
+const createRandomCars = () => {
+
+}
+
 const baseStore = useBaseStore()
 </script>
 
