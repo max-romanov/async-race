@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { defineProps } from 'vue'
-import type { IWinner } from '../interfaces/IWinner'
-import { useBaseStore } from '../stores/index'
+import type { IWinner } from '@/interfaces/IWinner'
+import { useBaseStore } from '@/stores'
 import Car from "@/components/Car.vue";
 
 interface IProps {
@@ -12,9 +11,6 @@ const store = useBaseStore()
 
 const props = defineProps<IProps>()
 
-console.log(store.getWinner(0))
-
-console.log(this)
 </script>
 
 <template>
@@ -22,4 +18,3 @@ console.log(this)
     <Car :controls="false" :car-data="store.cars.find(car => car.id === winner.id)"/>
   </div>
 </template>
-<я></я>

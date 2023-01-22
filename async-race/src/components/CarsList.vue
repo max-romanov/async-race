@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Car from './Car.vue'
 import type {IExtendedCar} from "@/interfaces/IExtendedCar";
+import {useBaseStore} from "@/stores";
 
 interface IProps {
   cars: IExtendedCar[]
@@ -11,8 +12,8 @@ const props = defineProps<IProps>()
 
 <template>
   <div>
-    <div v-for="car in props.cars" :key="car.id">
-      <Car :controls="true" :car-data="car"></Car>
+    <div v-for="car in props.cars" :key="car">
+      <component :is="Car" :carData="car" :controls="true"/>
     </div>
   </div>
 </template>
