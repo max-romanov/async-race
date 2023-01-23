@@ -52,12 +52,6 @@ const animate = (timestamp: number) => {
   }
 }
 
-function onClick() {
-  if (props.controls) {
-    baseStore.setCurrentCar(props.carData)
-  }
-}
-
 const transition = ref<number>(0)
 
 async function startCar() {
@@ -119,7 +113,6 @@ const {log} = console
         Remove
       </button>
       <edit-car-popup :car-color="props.carData.color" :car-name="props.carData.name" @submit="(newName, newColor) => {
-        log(newName, newColor)
         baseStore.updateCar(props.carData.id, newName, newColor)
       }"/>
     </div>
