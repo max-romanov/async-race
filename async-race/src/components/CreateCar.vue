@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useBaseStore } from '@/stores/'
 import {ref} from "vue";
+import {generateRandomCars} from "@/common/generateRandomCars/generateRandomCars";
 
 const color = ref("#000000")
 const name = ref("")
@@ -10,7 +11,7 @@ const clearInputs = () => {
   name.value = ""
 }
 
-
+const {log} = console
 
 const baseStore = useBaseStore()
 </script>
@@ -26,7 +27,7 @@ const baseStore = useBaseStore()
         baseStore.createCar(name, color)
         clearInputs()
       }">Create</button>
-    <button>Generate Cars</button>
+    <button @click="baseStore.generateCars(100)">Generate Cars</button>
   </div>
 </template>
 
