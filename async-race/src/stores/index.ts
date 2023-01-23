@@ -2,6 +2,7 @@ import {defineStore} from 'pinia'
 import type {ICar} from '../interfaces/ICar'
 import type {IWinner} from '@/interfaces/IWinner'
 import type {IExtendedCar} from "@/interfaces/IExtendedCar";
+import {generateRandomCars} from "@/common/generateRandomCars/generateRandomCars";
 
 interface IStoreStates {
   garage: ICar[] | null
@@ -51,9 +52,7 @@ export const useBaseStore = defineStore('baseStore', {
     },
 
     async createCar(name: string, color: string) {
-      console.log({name, color})
       try {
-        console.time("createCar")
         const res = await fetch('http://localhost:3000/garage', {
           method: 'POST',
           body: JSON.stringify({name, color}),
@@ -67,7 +66,6 @@ export const useBaseStore = defineStore('baseStore', {
           const car = data
           car.isMoving = false
           this.cars.push(car)
-          console.timeEnd("createCar")
         }
         console.log(res)
       } catch (e) {
@@ -185,6 +183,16 @@ export const useBaseStore = defineStore('baseStore', {
         console.log(data)
       } catch (err) {
         console.log(err)
+      }
+    },
+
+    async generateCars(amount: number) {
+      const cars = generateRandomCars(amount)
+
+      for (let i = 0; i < cars.length; i++) {
+        const { name, color } = cars[i]
+
+        await this.createCar(name, color)
       }
     }
   },
