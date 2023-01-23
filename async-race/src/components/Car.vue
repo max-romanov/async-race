@@ -120,6 +120,7 @@ const {log} = console
       </button>
       <edit-car-popup :car-color="props.carData.color" :car-name="props.carData.name" @submit="(newName, newColor) => {
         log(newName, newColor)
+        baseStore.updateCar(props.carData.id, newName, newColor)
       }"/>
     </div>
   </div>

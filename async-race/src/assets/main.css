@@ -56,3 +56,17 @@ button:hover {
   color: var(--vue-green);
 }
 
+input:not([type="color"]) {
+  border: var(--vue-green) solid 2px;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: none;
+  outline: none;
+  background: transparent;
+  transition: 0.5s ease;
+  color: var(--vue-green);
+  padding: 8px 10px;
+  margin: 5px 0;
+  font-size: 22px;
+  font-family: "JetBrains Mono";
+}

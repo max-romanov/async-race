@@ -2,6 +2,7 @@
 :root {
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
+  --white-soft-transparent: rgb(248 248 248 / 0.7);
   --vt-c-white-mute: #f2f2f2;
 
   /*--grey-muted: #838282;*/

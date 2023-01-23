@@ -2,30 +2,23 @@
 import { useBaseStore } from '@/stores/'
 import {ref} from "vue";
 
-let color: string = '#000000'
-let name: string = ''
-
-const nameInput = ref<HTMLInputElement | null>(null)
-const colorInput = ref<HTMLInputElement | null>(null)
+const color = ref("#000000")
+const name = ref("")
 
 const clearInputs = () => {
-  if (nameInput.value && colorInput.value) {
-    nameInput.value.value = "#000000"
-    colorInput.value.value = ""
-  }
+  color.value = "#000000"
+  name.value = ""
 }
 
-const createRandomCars = () => {
 
-}
 
 const baseStore = useBaseStore()
 </script>
 
 <template>
   <div>
-      <input ref="nameInput" name="name" class="green-input-color" type="color" v-model="color" v-bind="" />
-      <input ref="colorInput" name="color" class="green-input-text" placeholder="car name" type="text" v-model="name" >
+      <input name="name" class="green-input-color" type="color" v-model="color" />
+      <input name="color" class="green-input-text" placeholder="car name" type="text" v-model="name" >
       <button class="create-button" @click="() => {
         if (!name.length) {
           return
@@ -33,6 +26,7 @@ const baseStore = useBaseStore()
         baseStore.createCar(name, color)
         clearInputs()
       }">Create</button>
+    <button>Generate Cars</button>
   </div>
 </template>
 
@@ -46,6 +40,7 @@ div {
 
 .green-input-text {
   border: var(--vt-c-black-mute) solid 2px;
+  width: auto;
   border-radius: 8px;
   box-shadow: none;
   outline: none;

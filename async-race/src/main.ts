@@ -5,9 +5,9 @@ import router from './router'
 import './assets/main.css'
 
 import Unicon from 'vue-unicons'
-import { uniTrophy, uniCarSlash, uniRocket, uniPen, uniCornerDownLeft, uniCheckCircle } from 'vue-unicons/dist/icons'
+import { uniTrophy, uniCarSlash, uniRocket, uniPen, uniCornerDownLeft, uniCheckCircle, uniTimesCircle } from 'vue-unicons/dist/icons'
 
-Unicon.add([uniTrophy, uniCarSlash, uniRocket, uniPen, uniCornerDownLeft, uniCheckCircle])
+Unicon.add([uniTrophy, uniCarSlash, uniRocket, uniPen, uniCornerDownLeft, uniCheckCircle, uniTimesCircle])
 
 const app = createApp(App)
 
