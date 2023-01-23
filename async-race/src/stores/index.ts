@@ -83,14 +83,18 @@ export const useBaseStore = defineStore('baseStore', {
       return res.json()
     },
 
-    async startCar(id: number): Promise<{ velocity: number, distance: number } | null> {
+    async startCar(id: number): Promise<{ velocity: number, distance: number } | undefined> {
       if (!this.cars) {
-        return null
+        return
       }
-      const res = await fetch(`http://localhost:3000/engine?id=${id}&status=started`, {
-        method: "PATCH"
-      })
-      return await res.json()
+      try {
+        const res = await fetch(`http://localhost:3000/engine?id=${id}&status=started`, {
+          method: "PATCH"
+        })
+        return await res.json()
+      } catch (err) {
+        console.log(err)
+      }
     },
 
     async driveCar(id: number) {
@@ -134,7 +138,7 @@ export const useBaseStore = defineStore('baseStore', {
       return null
     },
 
-    startAll() {
+    startRace() {
       if (this.cars) {
         this.cars = this.cars.map(car => {
           return {
@@ -164,7 +168,25 @@ export const useBaseStore = defineStore('baseStore', {
       }
     },
 
-
+    async updateCar(id: number, newName: string, newColor: string) {
+      try {
+        const res = await fetch(`http://localhost:3000/garage/${id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            name: newName,
+            color: newColor
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        const data = await res.json()
+        await this.setData()
+        console.log(data)
+      } catch (err) {
+        console.log(err)
+      }
+    }
   },
 })
 

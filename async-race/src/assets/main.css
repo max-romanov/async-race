@@ -1,4 +1,5 @@
 @import './base.css';
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
 
 #app {
   display: flex;
@@ -53,4 +54,19 @@ button {
 
 button:hover {
   color: var(--vue-green);
+}
+
+input:not([type="color"]) {
+  border: var(--vue-green) solid 2px;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: none;
+  outline: none;
+  background: transparent;
+  transition: 0.5s ease;
+  color: var(--vue-green);
+  padding: 8px 10px;
+  margin: 5px 0;
+  font-size: 22px;
+  font-family: "JetBrains Mono";
 }

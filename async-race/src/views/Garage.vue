@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useBaseStore } from '@/stores'
+import {useBaseStore} from '@/stores'
 import CarsList from '../components/CarsList.vue'
 import CreateCar from '@/components/CreateCar.vue'
 
@@ -8,11 +8,17 @@ const baseStore = useBaseStore()
 
 <template>
   <div class="garage fade">
-    <button class="race-button" @click="baseStore.startAll()">
-      <unicon name="rocket"/>
-      race
-    </button>
-    <CreateCar  />
+    <div class="garage-buttons">
+      <button class="race-button" @click="baseStore.startRace()">
+        <unicon name="rocket"/>
+        Race
+      </button>
+      <button>
+        <unicon name="corner-down-left" @click="baseStore.stopAll()"/>
+        Reset
+      </button>
+    </div>
+    <CreateCar/>
     <div v-if="baseStore.cars">
       <h2 class="green">cars in garage: {{ baseStore.cars.length }}</h2>
       <CarsList :cars="baseStore.cars"></CarsList>
@@ -29,7 +35,9 @@ const baseStore = useBaseStore()
   height: 100%;
 }
 
-.race-button {
+.garage-buttons {
+  display: flex;
+  gap: 10px;
   margin-bottom: 5px;
 }
 </style>

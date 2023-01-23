@@ -14,7 +14,6 @@ const route = useRoute()
     <div class="links-wrapper">
       <div class="links">
         <RouterLink to="/winners">
-          <unicon  name="trophy"/>
           Winners
         </RouterLink>
         <RouterLink to="/">
