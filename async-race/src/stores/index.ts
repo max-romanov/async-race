@@ -186,7 +186,7 @@ export const useBaseStore = defineStore('baseStore', {
       }
     },
 
-    async generateCars(amount: number) {
+    async generateRandomCars(amount: number) {
       const cars = generateRandomCars(amount)
 
       for (let i = 0; i < cars.length; i++) {
