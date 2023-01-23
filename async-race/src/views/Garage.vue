@@ -5,12 +5,10 @@ import {useBaseStore} from '@/stores'
 import CarsList from '../components/CarsList.vue'
 import CreateCar from '@/components/CreateCar.vue'
 
-const currentPage = ref<number>(1)
-
 const baseStore = useBaseStore()
 
 const getCars = () => {
-  baseStore.getCars(currentPage.value, 7)
+  baseStore.getCars(baseStore.currentPage, 7)
 }
 
 getCars()
@@ -31,19 +29,19 @@ getCars()
     </div>
     <CreateCar/>
     <div v-if="baseStore.cars">
-      <p>{{ currentPage }}</p>
+      <p>{{ baseStore.currentPage }}</p>
       <h2 class="green">total cars in garage: {{ baseStore.cars.length }}</h2>
       <div class="change-page-buttons">
         <button title="previous page" @click="() => {
-      if (currentPage !== 1) {
-        currentPage--
+      if (baseStore.currentPage !== 1) {
+        baseStore.currentPage--
         getCars()
       }
     }">
           <unicon name="angle-left-b"/>
         </button>
         <button title="previous page" @click="() => {
-      currentPage++
+      baseStore.currentPage++
       getCars()
     }">
           <unicon name="angle-right-b"/>

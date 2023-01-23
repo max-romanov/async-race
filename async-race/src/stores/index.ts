@@ -9,6 +9,7 @@ interface IStoreStates {
   winners: IWinner[] | null
   cars: IExtendedCar[] | null
   currentCars: IExtendedCar[]
+  currentPage: number
 }
 
 export const useBaseStore = defineStore('baseStore', {
@@ -16,7 +17,8 @@ export const useBaseStore = defineStore('baseStore', {
     garage: null,
     winners: null,
     cars: null,
-    currentCars: []
+    currentCars: [],
+    currentPage: 0,
   }),
   actions: {
     async setGarage() {
@@ -171,6 +173,7 @@ export const useBaseStore = defineStore('baseStore', {
           }
         })
         const data = await res.json()
+        await this.getCars(this.currentPage, 7)
         await this.setData()
         console.log(data)
       } catch (err) {
