@@ -6,11 +6,7 @@ import CreateCar from '@/components/CreateCar.vue'
 
 const baseStore = useBaseStore()
 
-const getCars = () => {
-  baseStore.getCars(baseStore.currentPage, 7)
-}
-
-getCars()
+baseStore.updateCurrentPage(7)
 
 </script>
 
@@ -34,15 +30,15 @@ getCars()
         <button title="previous page" @click="() => {
       if (baseStore.currentPage !== 1) {
         baseStore.currentPage--
-        getCars()
+        baseStore.updateCurrentPage(7)
       }
     }">
           <unicon name="angle-left-b"/>
         </button>
         <button title="previous page" @click="() => {
       baseStore.currentPage++
-      getCars()
-    }">
+      baseStore.updateCurrentPage(7)
+          }">
           <unicon name="angle-right-b"/>
         </button>
       </div>

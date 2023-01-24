@@ -18,7 +18,6 @@ const baseStore = useBaseStore()
 const props = defineProps<IProps>()
 
 const start = computed<string>(() => {
-  console.log(props.carData.isMoving)
   return props.carData.isMoving ? "Stop" : "Start"
 })
 
@@ -63,7 +62,6 @@ async function startCar() {
   // }
   const data = await baseStore.startCar(props.carData.id)
   if (data) {
-    console.log(data)
     setTimeout(() => {animation = false}, data.distance / data.velocity)
     duration = data.distance / data.velocity
     requestAnimationFrame(animate)
@@ -74,15 +72,12 @@ async function startCar() {
       animation = false
     }
 
-    console.log(a)
   }
 }
 
 const deleteCar = () => {
   baseStore.removeCar(props.carData.id)
 }
-
-console.log(props.carData.isMoving)
 
 if (props.carData.isMoving && props.controls) {
   startCar()

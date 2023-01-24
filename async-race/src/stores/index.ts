@@ -33,7 +33,6 @@ export const useBaseStore = defineStore('baseStore', {
             }
           })
         }
-        console.log(this.garage)
       } catch (e) {
         console.log(e)
       }
@@ -69,7 +68,6 @@ export const useBaseStore = defineStore('baseStore', {
           car.isMoving = false
           this.cars.push(car)
         }
-        console.log(res)
       } catch (e) {
         console.log(e)
       }
@@ -98,12 +96,10 @@ export const useBaseStore = defineStore('baseStore', {
       if (!this.cars) {
         return
       }
-      console.log(`drive mode ${id}`)
       try {
         const res = await fetch(`http://localhost:3000/engine?id=${id}&status=drive`, {
           method: "PATCH",
         })
-        console.log("fetch")
         return await res.text()
       } catch (e) {
         console.log(e)
@@ -191,20 +187,17 @@ export const useBaseStore = defineStore('baseStore', {
       }
     },
 
-    async getCars(page: number, limit: number): Promise<IExtendedCar[] | undefined> {
+    async updateCurrentPage(carsLimit: number) {
       try {
-        const res = await fetch(`http://localhost:3000/garage?_page=${page}&_limit=${limit}`)
+        const res = await fetch(`http://localhost:3000/garage?_page=${this.currentPage}&_limit=${carsLimit}`)
         const data = await res.json()
         if (data instanceof Array<ICar>) {
-          const cars: IExtendedCar[] = data.map(car => ({...car, isMoving: false}))
-          console.log(cars)
-          this.currentCars = cars
-          return cars
+          this.currentCars = data.map(car => ({...car, isMoving: false}))
         }
       } catch (e) {
         console.log(e)
       }
-    }
+    },
   },
 
 })

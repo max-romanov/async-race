@@ -27,13 +27,14 @@ const baseStore = useBaseStore()
         clearInputs()
       }">Create
     </button>
-    <button @click="() => {
+    <button @click="async () => {
       if (baseStore.cars) {
         baseStore.cars.forEach(car => {
           baseStore.removeCar(car.id)
         })
       }
-      baseStore.generateRandomCars(100)
+      await baseStore.generateRandomCars(100)
+      await baseStore.updateCurrentPage(7)
     }"
     >Generate Cars
     </button>
