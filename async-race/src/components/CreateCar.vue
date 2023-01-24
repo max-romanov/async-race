@@ -28,7 +28,11 @@ const baseStore = useBaseStore()
       }">Create
     </button>
     <button @click="() => {
-      baseStore.cars = []
+      if (baseStore.cars) {
+        baseStore.cars.forEach(car => {
+          baseStore.removeCar(car.id)
+        })
+      }
       baseStore.generateRandomCars(100)
     }"
     >Generate Cars
