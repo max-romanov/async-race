@@ -18,7 +18,7 @@ export const useBaseStore = defineStore('baseStore', {
     winners: null,
     cars: null,
     currentCars: [],
-    currentPage: 0,
+    currentPage: 1,
   }),
   actions: {
     async setGarage() {
