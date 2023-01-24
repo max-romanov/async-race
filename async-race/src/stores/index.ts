@@ -8,7 +8,8 @@ interface IStoreStates {
   garage: ICar[] | null
   winners: IWinner[] | null
   cars: IExtendedCar[] | null
-  chosenCar: IExtendedCar | null
+  currentCars: IExtendedCar[]
+  currentPage: number
 }
 
 export const useBaseStore = defineStore('baseStore', {
@@ -16,7 +17,8 @@ export const useBaseStore = defineStore('baseStore', {
     garage: null,
     winners: null,
     cars: null,
-    chosenCar: null
+    currentCars: [],
+    currentPage: 0,
   }),
   actions: {
     async setGarage() {
@@ -71,9 +73,6 @@ export const useBaseStore = defineStore('baseStore', {
       } catch (e) {
         console.log(e)
       }
-    },
-    setCurrentCar(car: IExtendedCar) {
-      this.chosenCar = car
     },
 
     async getWinner(id: number) {
@@ -137,13 +136,8 @@ export const useBaseStore = defineStore('baseStore', {
     },
 
     startRace() {
-      if (this.cars) {
-        this.cars = this.cars.map(car => {
-          return {
-            ...car,
-            isMoving: true,
-          }
-        })
+      if (this.currentCars) {
+        this.currentCars = this.currentCars.map(car => ({...car, isMoving: true}))
       }
     },
 
@@ -179,6 +173,7 @@ export const useBaseStore = defineStore('baseStore', {
           }
         })
         const data = await res.json()
+        await this.getCars(this.currentPage, 7)
         await this.setData()
         console.log(data)
       } catch (err) {
@@ -194,8 +189,24 @@ export const useBaseStore = defineStore('baseStore', {
 
         await this.createCar(name, color)
       }
+    },
+
+    async getCars(page: number, limit: number): Promise<IExtendedCar[] | undefined> {
+      try {
+        const res = await fetch(`http://localhost:3000/garage?_page=${page}&_limit=${limit}`)
+        const data = await res.json()
+        if (data instanceof Array<ICar>) {
+          const cars: IExtendedCar[] = data.map(car => ({...car, isMoving: false}))
+          console.log(cars)
+          this.currentCars = cars
+          return cars
+        }
+      } catch (e) {
+        console.log(e)
+      }
     }
   },
+
 })
 
 // const a=async()=>{
