@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useBaseStore} from "@/stores";
-import {ref, reactive, computed} from "vue";
+import {ref, computed} from "vue";
 import type {IExtendedCar} from "@/interfaces/IExtendedCar";
 import EditCarPopup from "@/components/EditCarPopup.vue";
 
