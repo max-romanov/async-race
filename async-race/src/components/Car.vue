@@ -11,8 +11,6 @@ interface IProps {
   controls?: boolean,
 }
 
-const engineIsBroken = ref<boolean>(false)
-
 const baseStore = useBaseStore()
 
 const props = defineProps<IProps>()
@@ -28,6 +26,10 @@ let animation: boolean = true
 let startTime: number | null = null
 
 const animate = (timestamp: number) => {
+  if (!animation) {
+    return;
+  }
+
   if (!startTime) {
     startTime = timestamp
   }
@@ -57,13 +59,11 @@ async function startCar() {
   if (!baseStore.cars) {
     return
   }
-  // if (baseStore.cars[props.carData.id - 1].isMoving) {
-  //   return
-  // }
   const data = await baseStore.startCar(props.carData.id)
   if (data) {
     setTimeout(() => {animation = false}, data.distance / data.velocity)
     duration = data.distance / data.velocity
+    animation = true
     requestAnimationFrame(animate)
 
     const a = await baseStore.driveCar(props.carData.id)
@@ -83,7 +83,15 @@ if (props.carData.isMoving && props.controls) {
   startCar()
 }
 
-const {log} = console
+const stopCar = async () => {
+  if (car.value) {
+    await baseStore.stopCar(props.carData.id)
+    animation = false
+    duration = null
+    startTime = null
+    car.value.style.transform = `translateX(0px)`
+  }
+}
 
 </script>
 
@@ -95,7 +103,6 @@ const {log} = console
       ref="car"
       :style="{ backgroundColor: props.carData.color, transition: `${transition}` }"
     ></div>
-<!--    <img src="../assets/car-1057.svg" alt="234" :style="{background: props.carData.color}" ref="car">-->
     {{duration}}
 
     <div class="car-control-buttons" v-if="props.controls">
@@ -110,6 +117,10 @@ const {log} = console
       <edit-car-popup :car-color="props.carData.color" :car-name="props.carData.name" @submit="(newName, newColor) => {
         baseStore.updateCar(props.carData.id, newName, newColor)
       }"/>
+      <button @click="stopCar">
+        <unicon name="corner-down-left"/>
+        Reset
+      </button>
     </div>
   </div>
 </template>
