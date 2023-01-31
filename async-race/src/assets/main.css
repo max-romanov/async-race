@@ -49,11 +49,18 @@ button {
   color: var(--color-text);
   font-family: "JetBrains Mono";
   transition: .4s ease;
+}
+
+button:not([disabled]) {
   cursor: pointer;
 }
 
-button:hover {
+button:not([disabled]):hover {
   color: var(--vue-green);
+}
+
+button[disabled] {
+  border-color: var(--vt-c-black-mute);
 }
 
 input:not([type="color"]) {

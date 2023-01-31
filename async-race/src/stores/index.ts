@@ -93,10 +93,13 @@ export const useBaseStore = defineStore('baseStore', {
     },
 
     async driveCar(id: number) {
-      if (!this.cars) {
-        return
-      }
       try {
+        const car = this.getCar(id)
+        console.log('awdadw')
+        if (car) {
+          this.currentCars[car.indexInArr].isMoving = true
+          console.log("$$$$", this.getCar(id)?.car.isMoving)
+        }
         const res = await fetch(`http://localhost:3000/engine?id=${id}&status=drive`, {
           method: "PATCH",
         })
@@ -106,26 +109,24 @@ export const useBaseStore = defineStore('baseStore', {
       }
     },
 
-    stopCar(id: number) {
-      if (this.cars && this.cars[id - 1].isMoving) {
-        this.cars[id - 1].isMoving = false
-        return
+    async stopCar(id: number) {
+      await fetch(`http://localhost:3000/engine/?id=${id}&status=stopped`)
+      const car = this.getCar(id)
+      if (car) {
+        this.currentCars[car.indexInArr].isMoving = false
       }
+      return
     },
 
-    getCar(id: number): {car: IExtendedCar, indexInArr: number} | null {
-      if (!this.cars) {
-        return null
-      }
-
-      const car = this.cars.find((car, indx) => {
+    getCar(id: number): { car: IExtendedCar, indexInArr: number } | null {
+      const car = this.currentCars.find((car, indx) => {
         return car.id === id
       })
 
       if (car) {
         return {
           car,
-          indexInArr: this.cars.indexOf(car),
+          indexInArr: this.currentCars.indexOf(car),
         }
       }
       return null
@@ -169,7 +170,7 @@ export const useBaseStore = defineStore('baseStore', {
           }
         })
         const data = await res.json()
-        await this.getCars(this.currentPage, 7)
+        await this.getCars(7)
         await this.setData()
         console.log(data)
       } catch (err) {
@@ -181,13 +182,13 @@ export const useBaseStore = defineStore('baseStore', {
       const cars = generateRandomCars(amount)
 
       for (let i = 0; i < cars.length; i++) {
-        const { name, color } = cars[i]
+        const {name, color} = cars[i]
 
         await this.createCar(name, color)
       }
     },
 
-    async updateCurrentPage(carsLimit: number) {
+    async getCars(carsLimit: number) {
       try {
         const res = await fetch(`http://localhost:3000/garage?_page=${this.currentPage}&_limit=${carsLimit}`)
         const data = await res.json()

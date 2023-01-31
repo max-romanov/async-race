@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useBaseStore} from "@/stores";
-import {ref, computed} from "vue";
+import {computed, ref} from "vue";
 import type {IExtendedCar} from "@/interfaces/IExtendedCar";
 import EditCarPopup from "@/components/EditCarPopup.vue";
 
@@ -21,9 +21,31 @@ const start = computed<string>(() => {
 
 let duration: number | null = null
 
+const isMoving = baseStore.getCar(props.carData.id)?.car.isMoving
+
 let animeId: number | null = null
 let animation: boolean = true
 let startTime: number | null = null
+
+const reset = async () => {
+  console.log(baseStore.getCar(props.carData.id)?.car.isMoving)
+  if (
+      baseStore.getCar(props.carData.id)?.car.isMoving
+  ) {
+    console.log("stop")
+    const a = await baseStore.stopCar(props.carData.id)
+    console.log(a)
+  }
+  duration = null
+  animeId = null
+  animation = false
+  startTime = null
+  if (car.value) {
+    car.value.style.transform = ""
+  }
+}
+
+const startCarButtonDisabled = ref<boolean>(false)
 
 const animate = (timestamp: number) => {
   if (!animation) {
@@ -47,7 +69,7 @@ const animate = (timestamp: number) => {
 
     car.value.style.transform = `translateX(${left}px)`
 
-    if ((runTime < duration) && animation) {
+    if (runTime < duration) {
       animeId = requestAnimationFrame(animate)
     }
   }
@@ -56,22 +78,34 @@ const animate = (timestamp: number) => {
 const transition = ref<number>(0)
 
 async function startCar() {
+  if (startTime) {
+    reset()
+  }
+  startCarButtonDisabled.value = true
   if (!baseStore.cars) {
     return
   }
   const data = await baseStore.startCar(props.carData.id)
   if (data) {
-    setTimeout(() => {animation = false}, data.distance / data.velocity)
+    setTimeout(() => {
+      animation = false
+    }, data.distance / data.velocity)
     duration = data.distance / data.velocity
     animation = true
     requestAnimationFrame(animate)
 
-    const a = await baseStore.driveCar(props.carData.id)
+    const res = await baseStore.driveCar(props.carData.id)
 
-    if (a && a === "Car has been stopped suddenly. It's engine was broken down.") {
+    console.log(res)
+
+    if (res && res === "Car has been stopped suddenly. It's engine was broken down.") {
+      startCarButtonDisabled.value = false
       animation = false
+      return
     }
-
+    if (res && res.includes('success')) {
+      startCarButtonDisabled.value = false
+    }
   }
 }
 
@@ -83,15 +117,6 @@ if (props.carData.isMoving && props.controls) {
   startCar()
 }
 
-const stopCar = async () => {
-  if (car.value) {
-    await baseStore.stopCar(props.carData.id)
-    animation = false
-    duration = null
-    startTime = null
-    car.value.style.transform = `translateX(0px)`
-  }
-}
 
 </script>
 
@@ -99,16 +124,17 @@ const stopCar = async () => {
   <div class="car" @click="onClick">
     <h3>{{ props.carData.name }}</h3>
     <div
-      class="carColor"
-      ref="car"
-      :style="{ backgroundColor: props.carData.color, transition: `${transition}` }"
+        class="carColor"
+        ref="car"
+        :style="{ backgroundColor: props.carData.color, transition: `${transition}` }"
     ></div>
-    {{duration}}
 
     <div class="car-control-buttons" v-if="props.controls">
-      <button @click="startCar">
+      <button :disabled="startCarButtonDisabled" @click="() => {
+        startCar()
+      }">
         <unicon name="rocket"/>
-        {{ start }}
+        start
       </button>
       <button @click="deleteCar">
         <unicon name="car-slash"/>
@@ -117,10 +143,11 @@ const stopCar = async () => {
       <edit-car-popup :car-color="props.carData.color" :car-name="props.carData.name" @submit="(newName, newColor) => {
         baseStore.updateCar(props.carData.id, newName, newColor)
       }"/>
-      <button @click="stopCar">
+      <button @click="reset">
         <unicon name="corner-down-left"/>
         Reset
       </button>
+      {{ start }}
     </div>
   </div>
 </template>
