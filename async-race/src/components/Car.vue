@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import {useBaseStore} from "@/stores";
-import {computed, ref} from "vue";
-import type {IExtendedCar} from "@/interfaces/IExtendedCar";
-import EditCarPopup from "@/components/EditCarPopup.vue";
+import { useBaseStore } from '@/stores'
+import { computed, ref } from 'vue'
+import type { IExtendedCar } from '@/interfaces/IExtendedCar'
+import EditCarPopup from '@/components/EditCarPopup.vue'
 
 const car = ref<HTMLDivElement | null>(null)
 
 interface IProps {
-  carData: IExtendedCar,
-  controls?: boolean,
+  carData: IExtendedCar
+  controls?: boolean
 }
 
 const baseStore = useBaseStore()
@@ -16,7 +16,7 @@ const baseStore = useBaseStore()
 const props = defineProps<IProps>()
 
 const start = computed<string>(() => {
-  return props.carData.isMoving ? "Stop" : "Start"
+  return props.carData.isMoving ? 'Stop' : 'Start'
 })
 
 let duration: number | null = null
@@ -28,20 +28,15 @@ let animation: boolean = true
 let startTime: number | null = null
 
 const reset = async () => {
-  console.log(baseStore.getCar(props.carData.id)?.car.isMoving)
-  if (
-      baseStore.getCar(props.carData.id)?.car.isMoving
-  ) {
-    console.log("stop")
+  if (baseStore.getCar(props.carData.id)?.car.isMoving) {
     const a = await baseStore.stopCar(props.carData.id)
-    console.log(a)
   }
   duration = null
   animeId = null
   animation = false
   startTime = null
   if (car.value) {
-    car.value.style.transform = ""
+    car.value.style.transform = ''
   }
 }
 
@@ -49,7 +44,7 @@ const startCarButtonDisabled = ref<boolean>(false)
 
 const animate = (timestamp: number) => {
   if (!animation) {
-    return;
+    return
   }
 
   if (!startTime) {
@@ -96,9 +91,10 @@ async function startCar() {
 
     const res = await baseStore.driveCar(props.carData.id)
 
-    console.log(res)
-
-    if (res && res === "Car has been stopped suddenly. It's engine was broken down.") {
+    if (
+      res &&
+      res === "Car has been stopped suddenly. It's engine was broken down."
+    ) {
       startCarButtonDisabled.value = false
       animation = false
       return
@@ -116,35 +112,47 @@ const deleteCar = () => {
 if (props.carData.isMoving && props.controls) {
   startCar()
 }
-
-
 </script>
 
 <template>
   <div class="car" @click="onClick">
     <h3>{{ props.carData.name }}</h3>
     <div
-        class="carColor"
-        ref="car"
-        :style="{ backgroundColor: props.carData.color, transition: `${transition}` }"
+      class="carColor"
+      ref="car"
+      :style="{
+        backgroundColor: props.carData.color,
+        transition: `${transition}`,
+      }"
     ></div>
 
     <div class="car-control-buttons" v-if="props.controls">
-      <button :disabled="startCarButtonDisabled" @click="() => {
-        startCar()
-      }">
-        <unicon name="rocket"/>
+      <button
+        :disabled="startCarButtonDisabled"
+        @click="
+          () => {
+            startCar()
+          }
+        "
+      >
+        <unicon name="rocket" />
         start
       </button>
       <button @click="deleteCar">
-        <unicon name="car-slash"/>
+        <unicon name="car-slash" />
         Remove
       </button>
-      <edit-car-popup :car-color="props.carData.color" :car-name="props.carData.name" @submit="(newName, newColor) => {
-        baseStore.updateCar(props.carData.id, newName, newColor)
-      }"/>
+      <edit-car-popup
+        :car-color="props.carData.color"
+        :car-name="props.carData.name"
+        @submit="
+          (newName, newColor) => {
+            baseStore.updateCar(props.carData.id, newName, newColor)
+          }
+        "
+      />
       <button @click="reset">
-        <unicon name="corner-down-left"/>
+        <unicon name="corner-down-left" />
         Reset
       </button>
       {{ start }}
@@ -174,6 +182,4 @@ button {
   align-items: center;
   gap: 5px;
 }
-
-
 </style>

@@ -1,8 +1,8 @@
-import {defineStore} from 'pinia'
-import type {ICar} from '../interfaces/ICar'
-import type {IWinner} from '@/interfaces/IWinner'
-import type {IExtendedCar} from "@/interfaces/IExtendedCar";
-import {generateRandomCars} from "@/common/generateRandomCars/generateRandomCars";
+import { defineStore } from 'pinia'
+import type { ICar } from '../interfaces/ICar'
+import type { IWinner } from '@/interfaces/IWinner'
+import type { IExtendedCar } from '@/interfaces/IExtendedCar'
+import { generateRandomCars } from '@/common/generateRandomCars/generateRandomCars'
 
 interface IStoreStates {
   garage: ICar[] | null
@@ -26,10 +26,10 @@ export const useBaseStore = defineStore('baseStore', {
         const res = await fetch('http://localhost:3000/garage')
         this.garage = await res.json()
         if (this.garage) {
-          this.cars = this.garage.map(it => {
+          this.cars = this.garage.map((it) => {
             return {
               ...it,
-              isMoving: false
+              isMoving: false,
             }
           })
         }
@@ -56,10 +56,10 @@ export const useBaseStore = defineStore('baseStore', {
       try {
         const res = await fetch('http://localhost:3000/garage', {
           method: 'POST',
-          body: JSON.stringify({name, color}),
+          body: JSON.stringify({ name, color }),
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
           },
         })
         const data = await res.json()
@@ -78,14 +78,19 @@ export const useBaseStore = defineStore('baseStore', {
       return res.json()
     },
 
-    async startCar(id: number): Promise<{ velocity: number, distance: number } | undefined> {
+    async startCar(
+      id: number
+    ): Promise<{ velocity: number; distance: number } | undefined> {
       if (!this.cars) {
         return
       }
       try {
-        const res = await fetch(`http://localhost:3000/engine?id=${id}&status=started`, {
-          method: "PATCH"
-        })
+        const res = await fetch(
+          `http://localhost:3000/engine?id=${id}&status=started`,
+          {
+            method: 'PATCH',
+          }
+        )
         return await res.json()
       } catch (err) {
         console.log(err)
@@ -95,14 +100,15 @@ export const useBaseStore = defineStore('baseStore', {
     async driveCar(id: number) {
       try {
         const car = this.getCar(id)
-        console.log('awdadw')
         if (car) {
           this.currentCars[car.indexInArr].isMoving = true
-          console.log("$$$$", this.getCar(id)?.car.isMoving)
         }
-        const res = await fetch(`http://localhost:3000/engine?id=${id}&status=drive`, {
-          method: "PATCH",
-        })
+        const res = await fetch(
+          `http://localhost:3000/engine?id=${id}&status=drive`,
+          {
+            method: 'PATCH',
+          }
+        )
         return await res.text()
       } catch (e) {
         console.log(e)
@@ -118,7 +124,7 @@ export const useBaseStore = defineStore('baseStore', {
       return
     },
 
-    getCar(id: number): { car: IExtendedCar, indexInArr: number } | null {
+    getCar(id: number): { car: IExtendedCar; indexInArr: number } | null {
       const car = this.currentCars.find((car, indx) => {
         return car.id === id
       })
@@ -134,14 +140,17 @@ export const useBaseStore = defineStore('baseStore', {
 
     startRace() {
       if (this.currentCars) {
-        this.currentCars = this.currentCars.map(car => ({...car, isMoving: true}))
+        this.currentCars = this.currentCars.map((car) => ({
+          ...car,
+          isMoving: true,
+        }))
       }
     },
 
     stopAll() {
       if (this.cars) {
-        this.cars = this.cars.map(car => {
-          return {...car, isMoving: false}
+        this.cars = this.cars.map((car) => {
+          return { ...car, isMoving: false }
         })
       }
     },
@@ -150,29 +159,27 @@ export const useBaseStore = defineStore('baseStore', {
       const car = this.getCar(id)
       if (car) {
         await fetch(`http://localhost:3000/garage/${id}`, {
-          method: "DELETE"
+          method: 'DELETE',
         })
         await this.setData()
-        console.log(this.cars)
       }
     },
 
     async updateCar(id: number, newName: string, newColor: string) {
       try {
         const res = await fetch(`http://localhost:3000/garage/${id}`, {
-          method: "PUT",
+          method: 'PUT',
           body: JSON.stringify({
             name: newName,
-            color: newColor
+            color: newColor,
           }),
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         })
         const data = await res.json()
         await this.getCars(7)
         await this.setData()
-        console.log(data)
       } catch (err) {
         console.log(err)
       }
@@ -182,7 +189,7 @@ export const useBaseStore = defineStore('baseStore', {
       const cars = generateRandomCars(amount)
 
       for (let i = 0; i < cars.length; i++) {
-        const {name, color} = cars[i]
+        const { name, color } = cars[i]
 
         await this.createCar(name, color)
       }
@@ -190,31 +197,16 @@ export const useBaseStore = defineStore('baseStore', {
 
     async getCars(carsLimit: number) {
       try {
-        const res = await fetch(`http://localhost:3000/garage?_page=${this.currentPage}&_limit=${carsLimit}`)
+        const res = await fetch(
+          `http://localhost:3000/garage?_page=${this.currentPage}&_limit=${carsLimit}`
+        )
         const data = await res.json()
         if (data instanceof Array<ICar>) {
-          this.currentCars = data.map(car => ({...car, isMoving: false}))
+          this.currentCars = data.map((car) => ({ ...car, isMoving: false }))
         }
       } catch (e) {
         console.log(e)
       }
     },
   },
-
 })
-
-// const a=async()=>{
-//   const res = await fetch(`http://localhost:3000/engine?id=1&status=started`, {
-//     method: "PATCH"
-//   })
-//   const data = await res.json()
-//   console.log(data)
-//
-//   const res1 = await fetch(`http://localhost:3000/engine?id=1&status=drive`, {
-//     method: "PATCH"
-//   })
-//   const data1 = await res1.json()
-//   console.log("data2", data1)
-//
-// }
-// await a()
