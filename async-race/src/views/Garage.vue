@@ -1,17 +1,12 @@
 <script setup lang="ts">
 
-import {ref} from "vue";
 import {useBaseStore} from '@/stores'
 import CarsList from '../components/CarsList.vue'
 import CreateCar from '@/components/CreateCar.vue'
 
 const baseStore = useBaseStore()
 
-const getCars = () => {
-  baseStore.getCars(baseStore.currentPage, 7)
-}
-
-getCars()
+baseStore.getCars(7)
 
 </script>
 
@@ -35,15 +30,15 @@ getCars()
         <button title="previous page" @click="() => {
       if (baseStore.currentPage !== 1) {
         baseStore.currentPage--
-        getCars()
+        baseStore.getCars(7)
       }
     }">
           <unicon name="angle-left-b"/>
         </button>
         <button title="previous page" @click="() => {
       baseStore.currentPage++
-      getCars()
-    }">
+      baseStore.getCars(7)
+          }">
           <unicon name="angle-right-b"/>
         </button>
       </div>
@@ -66,7 +61,7 @@ getCars()
   gap: 10px;
   margin-bottom: 5px;
 }
-
+q
 .change-page-buttons {
   display: flex;
   gap: 10px;

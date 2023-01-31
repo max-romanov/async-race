@@ -1,34 +1,52 @@
 <script setup lang="ts">
-import {useBaseStore} from "@/stores";
-import {ref, reactive, computed} from "vue";
-import type {IExtendedCar} from "@/interfaces/IExtendedCar";
-import EditCarPopup from "@/components/EditCarPopup.vue";
+import { useBaseStore } from '@/stores'
+import { computed, ref } from 'vue'
+import type { IExtendedCar } from '@/interfaces/IExtendedCar'
+import EditCarPopup from '@/components/EditCarPopup.vue'
 
 const car = ref<HTMLDivElement | null>(null)
 
 interface IProps {
-  carData: IExtendedCar,
-  controls?: boolean,
+  carData: IExtendedCar
+  controls?: boolean
 }
-
-const engineIsBroken = ref<boolean>(false)
 
 const baseStore = useBaseStore()
 
 const props = defineProps<IProps>()
 
 const start = computed<string>(() => {
-  console.log(props.carData.isMoving)
-  return props.carData.isMoving ? "Stop" : "Start"
+  return props.carData.isMoving ? 'Stop' : 'Start'
 })
 
 let duration: number | null = null
+
+const isMoving = baseStore.getCar(props.carData.id)?.car.isMoving
 
 let animeId: number | null = null
 let animation: boolean = true
 let startTime: number | null = null
 
+const reset = async () => {
+  if (baseStore.getCar(props.carData.id)?.car.isMoving) {
+    const a = await baseStore.stopCar(props.carData.id)
+  }
+  duration = null
+  animeId = null
+  animation = false
+  startTime = null
+  if (car.value) {
+    car.value.style.transform = ''
+  }
+}
+
+const startCarButtonDisabled = ref<boolean>(false)
+
 const animate = (timestamp: number) => {
+  if (!animation) {
+    return
+  }
+
   if (!startTime) {
     startTime = timestamp
   }
@@ -46,7 +64,7 @@ const animate = (timestamp: number) => {
 
     car.value.style.transform = `translateX(${left}px)`
 
-    if ((runTime < duration) && animation) {
+    if (runTime < duration) {
       animeId = requestAnimationFrame(animate)
     }
   }
@@ -55,26 +73,35 @@ const animate = (timestamp: number) => {
 const transition = ref<number>(0)
 
 async function startCar() {
+  if (startTime) {
+    reset()
+  }
+  startCarButtonDisabled.value = true
   if (!baseStore.cars) {
     return
   }
-  // if (baseStore.cars[props.carData.id - 1].isMoving) {
-  //   return
-  // }
   const data = await baseStore.startCar(props.carData.id)
   if (data) {
-    console.log(data)
-    setTimeout(() => {animation = false}, data.distance / data.velocity)
+    setTimeout(() => {
+      animation = false
+    }, data.distance / data.velocity)
     duration = data.distance / data.velocity
+    animation = true
     requestAnimationFrame(animate)
 
-    const a = await baseStore.driveCar(props.carData.id)
+    const res = await baseStore.driveCar(props.carData.id)
 
-    if (a && a === "Car has been stopped suddenly. It's engine was broken down.") {
+    if (
+      res &&
+      res === "Car has been stopped suddenly. It's engine was broken down."
+    ) {
+      startCarButtonDisabled.value = false
       animation = false
+      return
     }
-
-    console.log(a)
+    if (res && res.includes('success')) {
+      startCarButtonDisabled.value = false
+    }
   }
 }
 
@@ -82,14 +109,9 @@ const deleteCar = () => {
   baseStore.removeCar(props.carData.id)
 }
 
-console.log(props.carData.isMoving)
-
 if (props.carData.isMoving && props.controls) {
   startCar()
 }
-
-const {log} = console
-
 </script>
 
 <template>
@@ -98,23 +120,42 @@ const {log} = console
     <div
       class="carColor"
       ref="car"
-      :style="{ backgroundColor: props.carData.color, transition: `${transition}` }"
+      :style="{
+        backgroundColor: props.carData.color,
+        transition: `${transition}`,
+      }"
     ></div>
-<!--    <img src="../assets/car-1057.svg" alt="234" :style="{background: props.carData.color}" ref="car">-->
-    {{duration}}
 
     <div class="car-control-buttons" v-if="props.controls">
-      <button @click="startCar">
-        <unicon name="rocket"/>
-        {{ start }}
+      <button
+        :disabled="startCarButtonDisabled"
+        @click="
+          () => {
+            startCar()
+          }
+        "
+      >
+        <unicon name="rocket" />
+        start
       </button>
       <button @click="deleteCar">
-        <unicon name="car-slash"/>
+        <unicon name="car-slash" />
         Remove
       </button>
-      <edit-car-popup :car-color="props.carData.color" :car-name="props.carData.name" @submit="(newName, newColor) => {
-        baseStore.updateCar(props.carData.id, newName, newColor)
-      }"/>
+      <edit-car-popup
+        :car-color="props.carData.color"
+        :car-name="props.carData.name"
+        @submit="
+          (newName, newColor) => {
+            baseStore.updateCar(props.carData.id, newName, newColor)
+          }
+        "
+      />
+      <button @click="reset">
+        <unicon name="corner-down-left" />
+        Reset
+      </button>
+      {{ start }}
     </div>
   </div>
 </template>
@@ -141,6 +182,4 @@ button {
   align-items: center;
   gap: 5px;
 }
-
-
 </style>

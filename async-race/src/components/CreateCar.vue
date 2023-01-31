@@ -1,37 +1,66 @@
 <script setup lang="ts">
-import {useBaseStore} from '@/stores/'
-import {ref} from "vue";
+import { useBaseStore } from '@/stores/'
+import { ref } from 'vue'
+import {generateRandomCars} from "@/common/generateRandomCars/generateRandomCars";
 
-const color = ref("#000000")
-const name = ref("")
+const color = ref('#000000')
+const name = ref('')
+
+const createRandomCarsDisabled = ref<boolean>(false)
 
 const clearInputs = () => {
-  color.value = "#000000"
-  name.value = ""
+  color.value = '#000000'
+  name.value = ''
 }
 
-const {log} = console
+const { log } = console
 
 const baseStore = useBaseStore()
 </script>
 
 <template>
   <div>
-    <input name="name" class="green-input-color" type="color" v-model="color"/>
-    <input name="color" class="green-input-text" placeholder="car name" type="text" v-model="name">
-    <button class="create-button" @click="() => {
-        if (!name.length) {
-          return
+    <input name="name" class="green-input-color" type="color" v-model="color" />
+    <input
+      name="color"
+      class="green-input-text"
+      placeholder="car name"
+      type="text"
+      v-model="name"
+    />
+    <button
+      class="create-button"
+      @click="
+        () => {
+          if (!name.length) {
+            return
+          }
+          baseStore.createCar(name, color)
+          clearInputs()
         }
-        baseStore.createCar(name, color)
-        clearInputs()
-      }">Create
+      "
+    >
+      Create
     </button>
-    <button @click="() => {
-      baseStore.cars = []
-      baseStore.generateRandomCars(100)
-    }"
-    >Generate Cars
+    <button :disabled="createRandomCarsDisabled"
+      @click="
+        async () => {
+          log(createRandomCarsDisabled)
+          if (baseStore.cars) {
+            baseStore.cars.forEach((car) => {
+              baseStore.removeCar(car.id)
+            })
+          }
+          createRandomCarsDisabled = true
+          log(createRandomCarsDisabled)
+          await baseStore.generateRandomCars(100)
+          await baseStore.getCars(7)
+          createRandomCarsDisabled = false
+          log(createRandomCarsDisabled)
+        }
+      "
+    >
+      Generate Cars
     </button>
   </div>
 </template>
@@ -56,11 +85,11 @@ div {
   padding: 8px 20px;
   margin: 5px 0;
   font-size: 22px;
-  font-family: "JetBrains Mono";
+  font-family: 'JetBrains Mono';
 }
 
 .green-input-text::placeholder {
-  color: var(--vt-c-text-dark-2)
+  color: var(--vt-c-text-dark-2);
 }
 
 .green-input-text:focus {
@@ -87,7 +116,6 @@ div {
   border-radius: 50% !important;
   background: transparent;
   transition: 0.5s ease;
-
 }
 
 .green-input-text:focus {
