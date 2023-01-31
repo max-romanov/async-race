@@ -1,0 +1,79 @@
+@import './base.css';
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+
+#app {
+  display: flex;
+  max-width: 1280px;
+  padding: 2em 3em;
+  font-weight: normal;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+}
+
+.error-text-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.error-text {
+  border: solid 3px var(--vue-green);
+  color: var(--vue-green);
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 25px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}
+
+
+button {
+  border: solid 2px var(--vue-green);
+  padding: 5px 10px;
+  margin-top: 7px;
+  background: transparent;
+  border-radius: 7px;
+  color: var(--color-text);
+  font-family: "JetBrains Mono";
+  transition: .4s ease;
+}
+
+button:not([disabled]) {
+  cursor: pointer;
+}
+
+button:not([disabled]):hover {
+  color: var(--vue-green);
+}
+
+button[disabled] {
+  border-color: var(--vt-c-black-mute);
+}
+
+input:not([type="color"]) {
+  border: var(--vue-green) solid 2px;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: none;
+  outline: none;
+  background: transparent;
+  transition: 0.5s ease;
+  color: var(--vue-green);
+  padding: 8px 10px;
+  margin: 5px 0;
+  font-size: 22px;
+  font-family: "JetBrains Mono";
+}

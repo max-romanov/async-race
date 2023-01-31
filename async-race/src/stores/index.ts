@@ -1,0 +1,212 @@
+import { defineStore } from 'pinia'
+import type { ICar } from '../interfaces/ICar'
+import type { IWinner } from '@/interfaces/IWinner'
+import type { IExtendedCar } from '@/interfaces/IExtendedCar'
+import { generateRandomCars } from '@/common/generateRandomCars/generateRandomCars'
+
+interface IStoreStates {
+  garage: ICar[] | null
+  winners: IWinner[] | null
+  cars: IExtendedCar[] | null
+  currentCars: IExtendedCar[]
+  currentPage: number
+}
+
+export const useBaseStore = defineStore('baseStore', {
+  state: (): IStoreStates => ({
+    garage: null,
+    winners: null,
+    cars: null,
+    currentCars: [],
+    currentPage: 1,
+  }),
+  actions: {
+    async setGarage() {
+      try {
+        const res = await fetch('http://localhost:3000/garage')
+        this.garage = await res.json()
+        if (this.garage) {
+          this.cars = this.garage.map((it) => {
+            return {
+              ...it,
+              isMoving: false,
+            }
+          })
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    },
+
+    async setWinners() {
+      try {
+        const res = await fetch('http://localhost:3000/winners')
+        this.winners = await res.json()
+      } catch (e) {
+        console.log(e)
+      }
+    },
+
+    async setData() {
+      await this.setGarage()
+      await this.setWinners()
+    },
+
+    async createCar(name: string, color: string) {
+      try {
+        const res = await fetch('http://localhost:3000/garage', {
+          method: 'POST',
+          body: JSON.stringify({ name, color }),
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        })
+        const data = await res.json()
+        if (this.cars) {
+          const car = data
+          car.isMoving = false
+          this.cars.push(car)
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    },
+
+    async getWinner(id: number) {
+      const res = await fetch(`http://localhost:3000/winners/${id}`)
+      return res.json()
+    },
+
+    async startCar(
+      id: number
+    ): Promise<{ velocity: number; distance: number } | undefined> {
+      if (!this.cars) {
+        return
+      }
+      try {
+        const res = await fetch(
+          `http://localhost:3000/engine?id=${id}&status=started`,
+          {
+            method: 'PATCH',
+          }
+        )
+        return await res.json()
+      } catch (err) {
+        console.log(err)
+      }
+    },
+
+    async driveCar(id: number) {
+      try {
+        const car = this.getCar(id)
+        if (car) {
+          this.currentCars[car.indexInArr].isMoving = true
+        }
+        const res = await fetch(
+          `http://localhost:3000/engine?id=${id}&status=drive`,
+          {
+            method: 'PATCH',
+          }
+        )
+        return await res.text()
+      } catch (e) {
+        console.log(e)
+      }
+    },
+
+    async stopCar(id: number) {
+      await fetch(`http://localhost:3000/engine/?id=${id}&status=stopped`)
+      const car = this.getCar(id)
+      if (car) {
+        this.currentCars[car.indexInArr].isMoving = false
+      }
+      return
+    },
+
+    getCar(id: number): { car: IExtendedCar; indexInArr: number } | null {
+      const car = this.currentCars.find((car, indx) => {
+        return car.id === id
+      })
+
+      if (car) {
+        return {
+          car,
+          indexInArr: this.currentCars.indexOf(car),
+        }
+      }
+      return null
+    },
+
+    startRace() {
+      if (this.currentCars) {
+        this.currentCars = this.currentCars.map((car) => ({
+          ...car,
+          isMoving: true,
+        }))
+      }
+    },
+
+    stopAll() {
+      if (this.cars) {
+        this.cars = this.cars.map((car) => {
+          return { ...car, isMoving: false }
+        })
+      }
+    },
+
+    async removeCar(id: number) {
+      const car = this.getCar(id)
+      if (car) {
+        await fetch(`http://localhost:3000/garage/${id}`, {
+          method: 'DELETE',
+        })
+        await this.setData()
+      }
+    },
+
+    async updateCar(id: number, newName: string, newColor: string) {
+      try {
+        const res = await fetch(`http://localhost:3000/garage/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            name: newName,
+            color: newColor,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        const data = await res.json()
+        await this.getCars(7)
+        await this.setData()
+      } catch (err) {
+        console.log(err)
+      }
+    },
+
+    async generateRandomCars(amount: number) {
+      const cars = generateRandomCars(amount)
+
+      for (let i = 0; i < cars.length; i++) {
+        const { name, color } = cars[i]
+
+        await this.createCar(name, color)
+      }
+    },
+
+    async getCars(carsLimit: number) {
+      try {
+        const res = await fetch(
+          `http://localhost:3000/garage?_page=${this.currentPage}&_limit=${carsLimit}`
+        )
+        const data = await res.json()
+        if (data instanceof Array<ICar>) {
+          this.currentCars = data.map((car) => ({ ...car, isMoving: false }))
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    },
+  },
+})
